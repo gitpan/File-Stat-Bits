@@ -1,7 +1,7 @@
 %define       class File
 %define    subclass Stat
 %define subsubclass Bits
-%define     version 0.10
+%define     version 0.12
 %define     release 1
 
 # Derived values
@@ -21,11 +21,11 @@ Url: 		http://www.cpan.org/modules/by-module/%{class}/%{real_name}-%{version}.re
 Packager:       Dmitry Fedorov <fedorov@cpan.org>
 
 #Provides:	"virtual package"
-Requires: 	perl >= 5.3.0
+Requires: 	perl >= 5.5.0
 #Conflicts:	%{name} < %{version}
 
 BuildRoot: 	%{_tmppath}/%{name}-buildroot/
-BuildRequires:	perl >= 5.3.0
+BuildRequires:	perl >= 5.5.0
 
 # '(not relocateable)' if absent
 Prefix:		/usr

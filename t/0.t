@@ -2,6 +2,7 @@
 
 $^W=1;
 
+require 5.005;
 use strict;
 use Test;
 

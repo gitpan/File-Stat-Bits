@@ -43,6 +43,7 @@ This module also should concentrate all portability and compatibility issues.
 
 =cut
 
+require 5.005;
 use strict;
 
 BEGIN
@@ -50,7 +51,7 @@ BEGIN
     use Exporter;
     use vars qw($VERSION @ISA @EXPORT);
 
-    $VERSION = do { my @r = (q$Revision: 0.10 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 0.12 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -294,7 +295,7 @@ Dmitry Fedorov <fedorov@inp.nsk.su>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2003, Dmitry Fedorov <fedorov@inp.nsk.su>
+Copyright (C) 2003 Dmitry Fedorov <fedorov@inp.nsk.su>
 
 =head1 LICENSE
 
