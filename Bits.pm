@@ -45,13 +45,15 @@ This module also should concentrate all portability and compatibility issues.
 
 require 5.005;
 use strict;
+local $^W=1; # use warnings only since 5.006
+use integer;
 
 BEGIN
 {
     use Exporter;
     use vars qw($VERSION @ISA @EXPORT);
 
-    $VERSION = do { my @r = (q$Revision: 0.12 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 0.18 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -66,9 +68,8 @@ BEGIN
 
 	      &S_ISDIR &S_ISCHR &S_ISBLK &S_ISREG &S_ISFIFO &S_ISLNK &S_ISSOCK
 
-	&dev_split &major &minor
+	&major &minor &dev_split &dev_join
     );
-
 
     {
 	package File::Stat::Bits::dirty;
@@ -76,10 +77,9 @@ BEGIN
 	use File::Basename;
 	use lib dirname(__FILE__) . '/Bits';
 	local $^W=0;
-	sub _PAGESZ() { 4096 }	# supress unrelated missing stuff (IRIX64 6.5)
-	require 'sys/stat.ph';
-	require 'sys/sysmacros.ph';
-    };
+	no strict;
+	require 'stat.ph';
+    }
 
 
 =head1 CONSTANTS
@@ -96,25 +96,16 @@ File type bit masks (for the st_mode field):
  S_IFIFO	fifo (named pipe)
  S_IFLNK	symbolic link
  S_IFSOCK	socket
-
 =cut
-    my $s_ifmt   = File::Stat::Bits::dirty::S_IFMT  ();
-    my $s_ifdir  = File::Stat::Bits::dirty::S_IFDIR ();
-    my $s_ifchr  = File::Stat::Bits::dirty::S_IFCHR ();
-    my $s_ifblk  = File::Stat::Bits::dirty::S_IFBLK ();
-    my $s_ifreg  = File::Stat::Bits::dirty::S_IFREG ();
-    my $s_ififo  = File::Stat::Bits::dirty::S_IFIFO ();
-    my $s_iflnk  = File::Stat::Bits::dirty::S_IFLNK ();
-    my $s_ifsock = File::Stat::Bits::dirty::S_IFSOCK();
 
-    sub S_IFMT  () { $s_ifmt   }
-    sub S_IFDIR () { $s_ifdir  }
-    sub S_IFCHR () { $s_ifchr  }
-    sub S_IFBLK () { $s_ifblk  }
-    sub S_IFREG () { $s_ifreg  }
-    sub S_IFIFO () { $s_ififo  }
-    sub S_IFLNK () { $s_iflnk  }
-    sub S_IFSOCK() { $s_ifsock }
+    sub S_IFMT  () { File::Stat::Bits::dirty::S_IFMT  () }
+    sub S_IFDIR () { File::Stat::Bits::dirty::S_IFDIR () }
+    sub S_IFCHR () { File::Stat::Bits::dirty::S_IFCHR () }
+    sub S_IFBLK () { File::Stat::Bits::dirty::S_IFBLK () }
+    sub S_IFREG () { File::Stat::Bits::dirty::S_IFREG () }
+    sub S_IFIFO () { File::Stat::Bits::dirty::S_IFIFO () }
+    sub S_IFLNK () { File::Stat::Bits::dirty::S_IFLNK () }
+    sub S_IFSOCK() { File::Stat::Bits::dirty::S_IFSOCK() }
 
 
 =head2
@@ -144,44 +135,25 @@ Common mode bit masks:
  ACCESSPERMS	 0777
     ALLPERMS	07777
  DEFFILEMODE	 0666
-
 =cut
-    my $s_irwxu = File::Stat::Bits::dirty::S_IRWXU();
-    my $s_irusr = File::Stat::Bits::dirty::S_IRUSR();
-    my $s_iwusr = File::Stat::Bits::dirty::S_IWUSR();
-    my $s_ixusr = File::Stat::Bits::dirty::S_IXUSR();
-    my $s_isuid = File::Stat::Bits::dirty::S_ISUID();
 
-    my $s_irwxg = File::Stat::Bits::dirty::S_IRWXG();
-    my $s_irgrp = File::Stat::Bits::dirty::S_IRGRP();
-    my $s_iwgrp = File::Stat::Bits::dirty::S_IWGRP();
-    my $s_ixgrp = File::Stat::Bits::dirty::S_IXGRP();
-    my $s_isgid = File::Stat::Bits::dirty::S_ISGID();
+    sub S_IRWXU() { File::Stat::Bits::dirty::S_IRWXU() }
+    sub S_IRUSR() { File::Stat::Bits::dirty::S_IRUSR() }
+    sub S_IWUSR() { File::Stat::Bits::dirty::S_IWUSR() }
+    sub S_IXUSR() { File::Stat::Bits::dirty::S_IXUSR() }
+    sub S_ISUID() { File::Stat::Bits::dirty::S_ISUID() }
 
-    my $s_irwxo = File::Stat::Bits::dirty::S_IRWXO();
-    my $s_iroth = File::Stat::Bits::dirty::S_IROTH();
-    my $s_iwoth = File::Stat::Bits::dirty::S_IWOTH();
-    my $s_ixoth = File::Stat::Bits::dirty::S_IXOTH();
-    my $s_isvtx = File::Stat::Bits::dirty::S_ISVTX();
+    sub S_IRWXG() { File::Stat::Bits::dirty::S_IRWXG() }
+    sub S_IRGRP() { File::Stat::Bits::dirty::S_IRGRP() }
+    sub S_IWGRP() { File::Stat::Bits::dirty::S_IWGRP() }
+    sub S_IXGRP() { File::Stat::Bits::dirty::S_IXGRP() }
+    sub S_ISGID() { File::Stat::Bits::dirty::S_ISGID() }
 
-
-    sub S_IRWXU() { $s_irwxu }
-    sub S_IRUSR() { $s_irusr }
-    sub S_IWUSR() { $s_iwusr }
-    sub S_IXUSR() { $s_ixusr }
-    sub S_ISUID() { $s_isuid }
-
-    sub S_IRWXG() { $s_irwxg }
-    sub S_IRGRP() { $s_irgrp }
-    sub S_IWGRP() { $s_iwgrp }
-    sub S_IXGRP() { $s_ixgrp }
-    sub S_ISGID() { $s_isgid }
-
-    sub S_IRWXO() { $s_irwxo }
-    sub S_IROTH() { $s_iroth }
-    sub S_IWOTH() { $s_iwoth }
-    sub S_IXOTH() { $s_ixoth }
-    sub S_ISVTX() { $s_isvtx }
+    sub S_IRWXO() { File::Stat::Bits::dirty::S_IRWXO() }
+    sub S_IROTH() { File::Stat::Bits::dirty::S_IROTH() }
+    sub S_IWOTH() { File::Stat::Bits::dirty::S_IWOTH() }
+    sub S_IXOTH() { File::Stat::Bits::dirty::S_IXOTH() }
+    sub S_ISVTX() { File::Stat::Bits::dirty::S_ISVTX() }
 
 
     sub ACCESSPERMS()	{ S_IRWXU|S_IRWXG|S_IRWXO }
@@ -222,7 +194,6 @@ All returns boolean value.
 }
 
 
-
 =head2
 
 $major = major( $st_rdev )
@@ -230,10 +201,14 @@ $major = major( $st_rdev )
 Returns major device number of st_rdev
 
 =cut
+
 sub major
 {
     my $dev = shift;
-    return File::Stat::Bits::dirty::major($dev);
+
+    package File::Stat::Bits::dirty;
+
+    return defined MAJOR_MASK ? ($dev & MAJOR_MASK) >> MAJOR_SHIFT : undef;
 }
 
 
@@ -244,10 +219,14 @@ $minor = minor( $st_rdev )
 Returns minor device number of st_rdev
 
 =cut
+
 sub minor
 {
     my $dev = shift;
-    return File::Stat::Bits::dirty::minor($dev);
+
+    package File::Stat::Bits::dirty;
+
+    return defined MINOR_MASK ? ($dev & MINOR_MASK) >> MINOR_SHIFT : undef;
 }
 
 
@@ -258,6 +237,7 @@ sub minor
 Splits st_rdev to major and minor device numbers
 
 =cut
+
 sub dev_split
 {
     my $dev = shift;
@@ -265,21 +245,39 @@ sub dev_split
 }
 
 
-# can not use makedev converted by h2ph incorrectly
-#
-#=head2
-#
-#$st_rdev = dev_join( $major, $minor )
-#
-#Makes st_rdev from major and minor device numbers (makedev())
-#
-#=cut
+=head2
 
-#sub dev_join
-#{
-#    my ($major, $minor) = @_;
-#    return File::Stat::Bits::dirty::makedev($major, $minor);
-#}
+$st_rdev = dev_join( $major, $minor )
+
+Makes st_rdev from major and minor device numbers (makedev())
+
+=cut
+
+sub dev_join
+{
+    my ($major, $minor) = @_;
+
+    package File::Stat::Bits::dirty;
+
+    if ( defined MAJOR_SHIFT )
+    {
+	return
+	    (($major << MAJOR_SHIFT) & MAJOR_MASK) |
+	    (($minor << MINOR_SHIFT) & MINOR_MASK);
+    }
+    else
+    {
+	return undef;
+    }
+}
+
+
+=head1 NOTE
+
+If major/minor definitions absent in reasonable set of system C headers
+all major/minor related functions returns undef.
+
+=cut
 
 
 =head1 SEE ALSO

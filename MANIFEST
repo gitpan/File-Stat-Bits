@@ -5,5 +5,7 @@ INSTALL
 Makefile.PL
 t/MakeMakerFix.pm
 t/0.t
+t/gen-stat.c
+t/check-major-minor.sh
 Bits.pm
 perl-File-Stat-Bits.spec

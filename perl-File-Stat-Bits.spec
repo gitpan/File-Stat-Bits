@@ -1,7 +1,7 @@
 %define       class File
 %define    subclass Stat
 %define subsubclass Bits
-%define     version 0.12
+%define     version 0.18
 %define     release 1
 
 # Derived values

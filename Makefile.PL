@@ -3,19 +3,21 @@
 use strict;
 use lib "./t"; use MakeMakerFix;
 
-WriteMakefile('Bits.pm', 'postamble' => <<'EOF');
+my $postamble = '
 
 inc_dir = $(INST_LIB)/$(FULLEXT)
 
 $(inc_dir)/.exists: Makefile
 	@ $(MKPATH) $(inc_dir) && $(TOUCH) $(inc_dir)/.exists
-	@ inc_dir_abs=`cd $(inc_dir) && pwd`;		\
-	if test -f /usr/include/sys/sysmacros.h;	\
-	then SYSMACROS=sys/sysmacros.h; export SYSMACROS; fi;	\
-	(cd /usr/include && h2ph -l -d $$inc_dir_abs -a	\
-	sys/stat.h $$SYSMACROS); echo Ignored, OK;	\
-	$(TOUCH) $(inc_dir)/.exists
+	@ $(CC) `./t/check-major-minor.sh $(CC)` \
+		t/gen-stat.c -o t/gen-stat
+	@ t/gen-stat > $(inc_dir)/stat.ph
+	@ $(TOUCH) $(inc_dir)/.exists
 
 pure_all::   $(inc_dir)/.exists
-EOF
+
+';
+
+WriteMakefile('Bits.pm', 'clean' => {'FILES' => "t/gen-stat"},
+'postamble' => $postamble);
 

@@ -4,6 +4,7 @@ $^W=1;
 
 require 5.005;
 use strict;
+use integer;
 use Test;
 
 BEGIN { plan tests => 21 };
@@ -56,14 +57,23 @@ ok( ($st->mode & (S_IRUSR|S_IRGRP|S_IROTH)) != 0 );# 16
 
 sub is_int { my $arg = shift; return scalar($arg =~ m/^\d+$/) }
 
-my ($major, $minor) = dev_split( $st->dev );
-ok( is_int($major) and is_int($minor) );#17
+if ( defined major(0) )
+{
+    my ($major, $minor) = dev_split( $st->dev );
+    ok( is_int($major) and is_int($minor) );#17
 
-ok(1); #ok( dev_join($major, $minor) == $st->dev );#18
+    ok( dev_join($major, $minor) == $st->dev );#18
 
-ok( $major == major($st->dev) );#19
-ok( $minor == minor($st->dev) );#20
+    ok( $major == major($st->dev) );#19
+    ok( $minor == minor($st->dev) );#20
+}
+else
+{
+    ok(1);#17
+    ok(1);#18
+    ok(1);#19
+    ok(1);#20
+}
 
 $st = stat('/') or die "Can't stat /: $!\n";
 ok(S_ISDIR($st->mode));#21
-
