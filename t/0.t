@@ -9,6 +9,7 @@ BEGIN { plan tests => 21 };
 
 BEGIN
 {
+=head1
     require re;	# load arch-dependend modules before @INC stripping
 
     use Config; my $archname = $Config{'archname'};
@@ -21,6 +22,7 @@ BEGIN
 	    redo;
 	}
     }
+=cut
 }
 
 use File::Stat::Bits;
