@@ -1,0 +1,129 @@
+NAME
+    File::Stat::Bits - stat(2) bit mask constants
+
+SYNOPSIS
+     use File::stat;
+     use File::Stat::Bits;
+
+     my $st = stat($file) or die "Can't stat $file: $!";
+
+     if ( S_ISCHR($st->mode) ) {
+            my ($major, $minor) = dev_split( $st->rdev );
+
+            print "$file is character device $major:$minor\n";
+     }
+
+     printf "Permissions are %04o\n", $st->mode & ALLPERMS;
+
+    (Too many S_IF* constants to example)
+
+DESCRIPTION
+    Lots of Perl modules use the Unix file permissions and type bits
+    directly in binary form with risk of non-portability for some
+    exotic bits. Note that the POSIX module does not provides all
+    needed constants and I can't wait when the POSIX module will be
+    updated.
+
+    This separate module provides file type/mode bit and more
+    constants from sys/stat.ph and sys/sysmacros.ph without
+    pollution caller's namespace by other unneeded symbols from
+    these headers. Most of these constants exported by this module
+    are Constant Functions (see the perlsub manpage).
+
+    Since some of Perl builds does not include these converted
+    headers, the build procedure will generate it for itself in the
+    its own lib directory.
+
+    This module also should concentrate all portability and
+    compatibility issues.
+
+CONSTANTS
+  
+    File type bit masks (for the st_mode field):
+
+     S_IFMT         bitmask for the file type bitfields
+     S_IFDIR        directory
+     S_IFCHR        character device
+     S_IFBLK        block device
+     S_IFREG        regular file
+     S_IFIFO        fifo (named pipe)
+     S_IFLNK        symbolic link
+     S_IFSOCK       socket
+
+  
+    File access permission bit masks (for the st_mode field):
+
+     S_IRWXU        mask for file owner permissions
+     S_IRUSR        owner has read permission
+     S_IWUSR        owner has write permission
+     S_IXUSR        owner has execute permission
+     S_ISUID        set UID bit
+
+     S_IRWXG        mask for group permissions
+     S_IRGRP        group has read permission
+     S_IWGRP        group has write permission
+     S_IXGRP        group has execute permission
+     S_ISGID        set GID bit
+
+     S_IRWXO        mask for permissions for others
+     S_IROTH        others have read permission
+     S_IWOTH        others have write permisson
+     S_IXOTH        others have execute permission
+     S_ISVTX        sticky bit
+
+    Common mode bit masks:
+
+     ACCESSPERMS     0777
+        ALLPERMS    07777
+     DEFFILEMODE     0666
+
+FUNCTIONS
+  
+    File type test macros (for the st_mode field):
+
+     S_ISDIR ( mode )       directory?
+     S_ISCHR ( mode )       character device?
+     S_ISBLK ( mode )       block device?
+     S_ISREG ( mode )       regular file?
+     S_ISFIFO( mode )       fifo (named pipe)?
+     S_ISLNK ( mode )       is it a symbolic link?
+     S_ISSOCK( mode )       socket?
+
+    All returns boolean value.
+
+  
+    $major = major( $st_rdev )
+
+    Returns major device number of st_rdev
+
+  
+    $minor = minor( $st_rdev )
+
+    Returns minor device number of st_rdev
+
+  
+    ($major, $minor) = dev_split( $st_rdev )
+
+    Splits st_rdev to major and minor device numbers
+
+SEE ALSO
+    the stat(2) manpage
+
+    the File::stat(3) manpage
+
+AUTHOR
+    Dmitry Fedorov <fedorov@inp.nsk.su>
+
+COPYRIGHT
+    Copyright (c) 2003, Dmitry Fedorov <fedorov@inp.nsk.su>
+
+LICENCE
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation; either version 2 of
+    the License, or (at your option) any later version.
+
+DISCLAIMER
+    The author disclaims any responsibility for any mangling of your
+    system etc, that this script may cause.
+
