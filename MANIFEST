@@ -7,4 +7,4 @@ Makefile.PL
 t/MakeMakerFix.pm
 t/0.t
 Bits.pm
-
+perl-File-Stat-Bits.spec
