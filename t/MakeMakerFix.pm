@@ -10,7 +10,7 @@ MakeMakerFix - MakeMaker correction for site install with prefix specified
 
 	use strict;
 
-	my $fname = 'Test.pm';
+	my $fname = 'Convert.pm';
 
 	use lib "./t"; use MakeMakerFix;
 	my ($name, $abstract, $author) = from($fname);
@@ -28,7 +28,10 @@ B<or:>
 
 	use strict;
 	use lib "./t"; use MakeMakerFix;
-	WriteMakefile( 'Test.pm', { 'File::Stat::Bits' => 0 } );
+	WriteMakefile(	'Convert.pm',
+			'PREREQ_PM' => { 'File::Stat::Bits' => 0 },
+			'postamle'  => "..."
+		     );
 
 
  perl Makefile.PL prefix=~
@@ -106,15 +109,17 @@ use Carp;
 BEGIN
 {
     use Exporter;
-    use vars qw($VERSION @ISA @EXPORT $prefix $lib $archname);
+    use vars qw($VERSION @ISA @EXPORT $prefix $lib $archname $postamble);
 
-    $VERSION = do { my @r = (q$Revision: 1.5 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 1.6 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
-    $prefix   = undef;
-    $lib      = undef;
-    $archname = undef;
+    $prefix    = undef;
+    $lib       = undef;
+    $archname  = undef;
+    $postamble = undef;	# my own WriteMakefile() parameter
+
 
     @EXPORT = qw( &from &WriteMakefile );
 
@@ -178,7 +183,7 @@ INSTALLSITEMAN3DIR = $(INSTALLMAN3DIR)
 
 sub postamble
 {
-return <<'EOF';
+return <<'EOF' . $MakeMakerFix::postamble;
 
 # --- MakeMakerFix forces uninstall target:
 
@@ -215,12 +220,16 @@ package MakeMakerFix;
 Returns list which contains: package name, abstract, author
 extracted from specified file.
 
-=item B<WriteMakefile( FROM_FILENAME , { Prereq::Module => version } )>
+=item B<WriteMakefile( FROM_FILENAME [, ATTRIBUTE => VALUE [, ...] ] )>
 
 Call ExtUtils::MakeMaker::WriteMakefile() with parameters extracted
 from specified module file.
 
-Second optional parameter is hash ref for PREREQ_PM parameter.
+Rest of optional parameters is parameters for
+ExtUtils::MakeMaker::WriteMakefile().
+
+My own parameter 'postamble' may be used to specify string
+used in addition to overridable MY::postamble() method.
 
 =back
 
@@ -251,11 +260,23 @@ sub from
 
 sub WriteMakefile
 {
-    my ($fname, $prereq_pm) = @_;
+    my $fname = shift;
     my ($name, $abstract, $author) = from($fname);
 
-    # generate README:
-    `pod2text $fname >README`;
+    # my postamble attribute
+    foreach (my $i=0; $i < @_; $i+=1)
+    {
+	if ( $_[$i] eq 'postamble' )
+	{
+	    $postamble = $_[$i+1];
+	    splice(@_, $i, 2);
+	    last;
+	}
+    }
+
+    # generate README _before_ MakeMaker run:
+    system("pod2text $fname >README") == 0
+	or die "pod2text $fname >README failed: $?";
 
     use ExtUtils::MakeMaker;
     ExtUtils::MakeMaker::WriteMakefile(
@@ -263,8 +284,8 @@ sub WriteMakefile
 	'VERSION_FROM'	=> $fname,
 	'ABSTRACT'	=> $abstract,
 	'AUTHOR'	=> $author,
-	'clean'		=> {FILES => "README *.tar *.tar.gz"},
-	'PREREQ_PM'	=> $prereq_pm
+	'clean'		=> {'FILES' => 'README *.tar *.tar.gz'},
+	@_
     );
 }
 

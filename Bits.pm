@@ -50,7 +50,7 @@ BEGIN
     use Exporter;
     use vars qw($VERSION @ISA @EXPORT);
 
-    $VERSION = do { my @r = (q$Revision: 0.3 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 0.5 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -75,6 +75,7 @@ BEGIN
 	use File::Basename;
 	use lib dirname(__FILE__) . '/Bits';
 	local $^W=0;
+	sub _PAGESZ() { 4096 }	# supress unrelated missing stuff (IRIX64 6.5)
 	require 'sys/stat.ph';
 	require 'sys/sysmacros.ph';
     };

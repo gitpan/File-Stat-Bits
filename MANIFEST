@@ -2,6 +2,7 @@ MANIFEST
 MANIFEST.SKIP
 README
 INSTALL
+CHANGES
 Makefile.PL
 t/MakeMakerFix.pm
 t/0.t

@@ -1,9 +1,27 @@
 #!perl -w
 
+$^W=1;
+
 use strict;
 use Test;
 
 BEGIN { plan tests => 21 };
+
+BEGIN
+{
+    require re;	# load arch-dependend modules before @INC stripping
+
+    use Config; my $archname = $Config{'archname'};
+
+    foreach (my $i=0; $i < @INC; ++$i)	# strip arch paths from @INC
+    {
+	if ( $INC[$i] =~ m{$archname$}o )
+	{
+	    splice(@INC, $i, 1);
+	    redo;
+	}
+    }
+}
 
 use File::Stat::Bits;
 ok(1);#1
