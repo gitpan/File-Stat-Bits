@@ -1,5 +1,8 @@
 Revision history for Perl extension File::Stat::Bits.
 
+0.07	14-Mar-2003
+	- sys/sysmacros.h is absent on BSD
+
 0.05	05-Mar-2003
 	- generation of .ph files was missed in 0.03
 	- supress unrelated stuff error on Irix
