@@ -1,7 +1,7 @@
 %define       class File
 %define    subclass Stat
 %define subsubclass Bits
-%define     version 0.09
+%define     version 0.10
 %define     release 1
 
 # Derived values
@@ -27,6 +27,9 @@ Requires: 	perl >= 5.3.0
 BuildRoot: 	%{_tmppath}/%{name}-buildroot/
 BuildRequires:	perl >= 5.3.0
 
+# '(not relocateable)' if absent
+Prefix:		/usr
+
 
 %description
 Lots of Perl modules use the Unix file permissions and type bits directly
@@ -47,8 +50,8 @@ Most of these constants exported by this module are Constant Functions
 
 
 %build
-%{__perl} Makefile.PL
-make #OPTIMIZE="$RPM_OPT_FLAGS"
+%{__perl} Makefile.PL INSTALLDIRS=perl
+make
 
 
 %install
@@ -75,10 +78,6 @@ rm -rf $RPM_BUILD_DIR/%{real_name}-%{version}
 
 %files
 %defattr(-,root,root)
-%doc CHANGES
+#%doc CHANGES
 %{_prefix}
 
-
-%changelog
-* Thu Apr 24 2003 Dmitry Fedorov <fedorov@cpan.org>
-- Generic perl module spec file based on the one from Michael McLagan <michael.mclagan@linux.org>
