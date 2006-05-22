@@ -53,7 +53,7 @@ BEGIN
     use Exporter;
     use vars qw($VERSION @ISA @EXPORT);
 
-    $VERSION = do { my @r = (q$Revision: 0.18 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 0.19 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -289,11 +289,11 @@ L<File::stat(3)>
 
 =head1 AUTHOR
 
-Dmitry Fedorov <fedorov@inp.nsk.su>
+Dmitry Fedorov <dm.fedorov@gmail.com>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2003 Dmitry Fedorov <fedorov@inp.nsk.su>
+Copyright (C) 2003 Dmitry Fedorov <dm.fedorov@gmail.com>
 
 =head1 LICENSE
 

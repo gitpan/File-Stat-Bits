@@ -1,7 +1,7 @@
 %define       class File
 %define    subclass Stat
 %define subsubclass Bits
-%define     version 0.18
+%define     version 0.19
 %define     release 1
 
 # Derived values
@@ -50,13 +50,13 @@ Most of these constants exported by this module are Constant Functions
 
 
 %build
-%{__perl} Makefile.PL INSTALLDIRS=perl
-make
-
+%{__perl} Makefile.PL INSTALLDIRS="vendor" "PREFIX=%{buildroot}%{_prefix}"
+%{__make} %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%makeinstall PREFIX=$RPM_BUILD_ROOT%{_prefix}
+%makeinstall
+rm -rf %{buildroot}%{perl_archlib} %{buildroot}%{perl_vendorarch}/auto/*/*/.packlist
 
 # Clean up some files we don't want/need
 rm -rf `find $RPM_BUILD_ROOT -name "perllocal.pod"`

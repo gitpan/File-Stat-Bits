@@ -59,13 +59,13 @@ sub is_int { my $arg = shift; return scalar($arg =~ m/^\d+$/) }
 
 if ( defined major(0) )
 {
-    my ($major, $minor) = dev_split( $st->dev );
+    my ($major, $minor) = dev_split( $st->rdev );
     ok( is_int($major) and is_int($minor) );#17
 
-    ok( dev_join($major, $minor) == $st->dev );#18
+    ok( dev_join($major, $minor) == $st->rdev );#18
 
-    ok( $major == major($st->dev) );#19
-    ok( $minor == minor($st->dev) );#20
+    ok( $major == major($st->rdev) );#19
+    ok( $minor == minor($st->rdev) );#20
 }
 else
 {
