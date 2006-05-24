@@ -18,6 +18,7 @@ pure_all::   $(inc_dir)/.exists
 
 ';
 
-WriteMakefile('Bits.pm', 'clean' => {'FILES' => "t/gen-stat META.yml"},
-'postamble' => $postamble);
+WriteMakefile('Bits.pm', 'VERSION_FROM' => 'VERSION', 'NO_META' => 1,
+	      'clean' => {'FILES' => "t/gen-stat"},
+	      'postamble' => $postamble);
 

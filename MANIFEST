@@ -1,5 +1,6 @@
 MANIFEST
 MANIFEST.SKIP
+VERSION
 README
 INSTALL
 Makefile.PL
@@ -9,4 +10,4 @@ t/gen-stat.c
 t/check-major-minor.sh
 Bits.pm
 perl-File-Stat-Bits.spec
-META.yml                                 Module meta-data (added by MakeMaker)
+
