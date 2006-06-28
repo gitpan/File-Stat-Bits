@@ -9,7 +9,7 @@ inc_dir = $(INST_LIB)/$(FULLEXT)
 
 $(inc_dir)/.exists: Makefile
 	@ $(MKPATH) $(inc_dir) && $(TOUCH) $(inc_dir)/.exists
-	@ $(CC) `./t/check-major-minor.sh $(CC)` \
+	@ $(CC) `./t/configure.sh $(CC)` \
 		t/gen-stat.c -o t/gen-stat
 	@ t/gen-stat > $(inc_dir)/stat.ph
 	@ $(TOUCH) $(inc_dir)/.exists

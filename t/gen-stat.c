@@ -1,11 +1,11 @@
 /*
 	gen-stat.c
-	$Id: gen-stat.c,v 1.3 2004/07/30 02:49:00 fedorov Exp $
+	$Id: gen-stat.c,v 1.5 2006/06/28 11:54:00 fedorov Exp $
 
 	Outputs <sys/stat.h> constants to stdout
 	as Perl constant functions
 
-	(C) 2004 Dmitry A. Fedorov <fedorov@cpan.org>
+	(C) 2004,2006 Dmitry A. Fedorov <fedorov@cpan.org>
 	Copying policy: GNU LGPL
 */
 
@@ -119,15 +119,21 @@ static void test(unsigned long (*f)(unsigned long),
 		 unsigned long *_mask, unsigned int *_shift)
 {
     unsigned int shift;
-    unsigned long mask;
+    unsigned long mask, old_mask;
 
     for(shift=0; mask=MASK(shift), f(mask) == 0; ++shift)
 	;
 
     *_shift=shift;
 
-    for(*_mask=0; mask=MASK(shift), f(mask) != 0; ++shift)
-	*_mask |= mask;
+    for(*_mask=0, old_mask=0;
+	(mask=MASK(shift)) > old_mask;
+	++shift, old_mask=mask
+       )
+    {
+	if ( f(mask) != 0 )
+	    *_mask |= mask;
+    }
 }
 
 
